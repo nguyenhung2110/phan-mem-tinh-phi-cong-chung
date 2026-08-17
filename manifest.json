@@ -1,0 +1,17 @@
+{
+  "name": "Tính Phí Công Chứng",
+  "short_name": "Tính phí",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f5f7",
+  "theme_color": "#0f766e",
+  "description": "Phần mềm tính phí công chứng offline",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tính phí công chứng">
+<title>Tính phí công chứng</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f5f7;font-family:Arial,sans-serif;color:#17202a}
+.app{max-width:720px;margin:auto;padding:14px 12px 30px}
+header{background:#0f766e;color:#fff;border-radius:16px;padding:18px 16px;margin-bottom:12px}
+h1{font-size:21px;margin:0 0 5px}header p{margin:0;font-size:13px;opacity:.9}
+.card{background:#fff;border-radius:15px;padding:16px;margin:10px 0;box-shadow:0 2px 10px #0000000b}
+label{display:block;font-weight:700;font-size:14px;margin:10px 0 6px}
+select,input{width:100%;padding:13px 12px;border:1px solid #ccd3d8;border-radius:10px;font-size:17px;background:#fff}
+input{text-align:right}
+.hint{font-size:12px;color:#6b7280;margin-top:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+button{border:0;border-radius:10px;padding:13px 14px;font-weight:700;font-size:15px;cursor:pointer}
+.primary{background:#0f766e;color:#fff}.secondary{background:#e7efef;color:#115e59}.danger{background:#fee2e2;color:#991b1b}
+.results .row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #edf0f2;padding:10px 0}
+.results .row:last-child{border-bottom:0}.value{text-align:right;font-weight:700}
+.total{font-size:22px;color:#0f766e}.words{font-weight:600;line-height:1.45;margin-top:6px}
+.detail{background:#f8fafc;border-radius:10px;padding:11px;font-size:13px;line-height:1.55;white-space:pre-line}
+.small{font-size:12px;color:#6b7280}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.app{padding:10px 9px 24px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<h1>PHẦN MỀM TÍNH PHÍ CÔNG CHỨNG</h1>
+<p>Bản điện thoại · Không cần Internet · Một file HTML</p>
+</header>
+
+<div class="card">
+<label>Loại giao dịch</label>
+<select id="type">
+<option value="mortgage">Hợp đồng thế chấp</option>
+<option value="sale">Hợp đồng chuyển nhượng</option>
+<option value="gift">Hợp đồng tặng cho</option>
+<option value="loan">Hợp đồng vay tài sản</option>
+<option value="inheritance">Khai nhận / phân chia di sản</option>
+</select>
+<div id="fields"></div>
+</div>
+
+<div class="card">
+<label>Thù lao công chứng (VNĐ)</label>
+<input id="service" inputmode="numeric" value="0">
+<label>Chi phí khác (VNĐ)</label>
+<input id="other" inputmode="numeric" value="0">
+<div class="grid" style="margin-top:12px">
+<button class="primary" onclick="calculate()">TÍNH PHÍ</button>
+<button class="secondary" onclick="resetAll()">NHẬP LẠI</button>
+</div>
+</div>
+
+<div class="card results">
+<div class="row"><span>Giá trị tính phí</span><span class="value" id="base">0 đồng</span></div>
+<div class="row"><span>Phí công chứng</span><span class="value" id="fee">0 đồng</span></div>
+<div class="row"><span>Thù lao</span><span class="value" id="serviceOut">0 đồng</span></div>
+<div class="row"><span>Chi phí khác</span><span class="value" id="otherOut">0 đồng</span></div>
+<div class="row"><span class="total">TỔNG CỘNG</span><span class="value total" id="total">0 đồng</span></div>
+<label>Phí công chứng bằng chữ</label><div class="words" id="feeWords">Không đồng</div>
+<label>Tổng cộng bằng chữ</label><div class="words" id="totalWords">Không đồng</div>
+</div>
+
+<div class="card">
+<label>Cách tính</label>
+<div class="detail" id="detail">Chưa có kết quả.</div>
+</div>
+
+<div class="card">
+<div class="grid">
+<button class="secondary" onclick="saveHistory()">LƯU LỊCH SỬ</button>
+<button class="secondary" onclick="showHistory()">XEM LỊCH SỬ</button>
+</div>
+<div id="history" style="margin-top:10px"></div>
+<p class="small">Dữ liệu lịch sử được lưu trong bộ nhớ của trình duyệt trên thiết bị này.</p>
+</div>
+</div>
+
+<script>
+const rules={
+mortgage:{
+ name:"Hợp đồng thế chấp",
+ fields:[["asset","Giá trị tài sản"],["loan","Giá trị khoản vay"]],
+ base:["loan","asset"], mode:"max",
+ brackets:[
+  [50000000,"fixed",50000],
+  [100000000,"fixed",100000],
+  [1000000000,"percent",0.001],
+  [3000000000,"plus",1000000000,1000000,0.0006],
+  [5000000000,"plus",3000000000,2200000,0.0005],
+  [10000000000,"plus",5000000000,3200000,0.0004],
+  [100000000000,"plus",10000000000,5200000,0.0003],
+  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
+ ]},
+sale:{
+ name:"Hợp đồng chuyển nhượng",
+ fields:[["contract","Giá trị hợp đồng"],["asset","Giá trị tài sản theo quy định"]],
+ base:["contract","asset"],mode:"max", brackets:[
+  [50000000,"fixed",50000],[100000000,"fixed",100000],[1000000000,"percent",0.001],
+  [3000000000,"plus",1000000000,1000000,0.0006],[5000000000,"plus",3000000000,2200000,0.0005],
+  [10000000000,"plus",5000000000,3200000,0.0004],[100000000000,"plus",10000000000,5200000,0.0003],
+  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
+ ]},
+gift:{
+ name:"Hợp đồng tặng cho",
+ fields:[["contract","Giá trị hợp đồng"],["asset","Giá trị tài sản theo quy định"]],
+ base:["contract","asset"],mode:"max",
+ brackets:[
+  [50000000,"fixed",50000],[100000000,"fixed",100000],[1000000000,"percent",0.001],
+  [3000000000,"plus",1000000000,1000000,0.0006],[5000000000,"plus",3000000000,2200000,0.0005],
+  [10000000000,"plus",5000000000,3200000,0.0004],[100000000000,"plus",10000000000,5200000,0.0003],
+  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
+ ]},
+loan:{
+ name:"Hợp đồng vay tài sản",fields:[["loan","Giá trị khoản vay"]],
+ base:["loan"],mode:"first",brackets:[
+  [50000000,"fixed",50000],[100000000,"fixed",100000],[1000000000,"percent",0.001],
+  [3000000000,"plus",1000000000,1000000,0.0006],[5000000000,"plus",3000000000,2200000,0.0005],
+  [10000000000,"plus",5000000000,3200000,0.0004],[100000000000,"plus",10000000000,5200000,0.0003],
+  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
+ ]},
+inheritance:{
+ name:"Khai nhận / phân chia di sản",fields:[["estate","Giá trị di sản"]],
+ base:["estate"],mode:"first",brackets:[
+  [50000000,"fixed",50000],[100000000,"fixed",100000],[1000000000,"percent",0.001],
+  [3000000000,"plus",1000000000,1000000,0.0006],[5000000000,"plus",3000000000,2200000,0.0005],
+  [10000000000,"plus",5000000000,3200000,0.0004],[100000000000,"plus",10000000000,5200000,0.0003],
+  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
+ ]}
+};
+
+const digits=["không","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"];
+function read3(n,full=false){
+ n=Number(n);let h=Math.floor(n/100),r=n%100,t=Math.floor(r/10),u=r%10,s="";
+ if(h)s+=digits[h]+" trăm"; else if(full)s="không trăm";
+ if(!r)return s;
+ if(s)s+=" ";
+ if(t===0)s+=(full?"lẻ ":"")+digits[u];
+ else if(t===1)s+="mười"+(u?" "+(u===5?"lăm":digits[u]):"");
+ else s+=digits[t]+" mươi"+(u?" "+(u===1?"mốt":u===5?"lăm":u===4?"tư":digits[u]):"");
+ return s;
+}
+function words(n){
+ n=Math.round(n);if(!n)return"Không đồng";
+ const units=["","nghìn","triệu","tỷ","nghìn tỷ","triệu tỷ","tỷ tỷ"],g=[];
+ while(n){g.push(n%1000);n=Math.floor(n/1000)}
+ let p=[];
+ for(let i=g.length-1;i>=0;i--)if(g[i])p.push(read3(g[i],p.length>0)+(units[i]?" "+units[i]:""));
+ let s=p.join(" ");return s[0].toUpperCase()+s.slice(1)+" đồng";
+}
+function num(id){return Number((document.getElementById(id)?.value||"").replace(/[^\d]/g,""))||0}
+function fmt(n){return Math.round(n).toLocaleString("vi-VN")+" đồng"}
+function formatInput(e){
+ const s=e.target.value.replace(/[^\d]/g,"");
+ e.target.value=s?Number(s).toLocaleString("vi-VN"):"";
+ calculate();
+}
+function renderFields(){
+ const r=rules[document.getElementById("type").value],box=document.getElementById("fields");
+ box.innerHTML="";
+ r.fields.forEach(([id,label])=>{
+  box.innerHTML+=`<label>${label}</label><input id="${id}" inputmode="numeric" placeholder="Nhập số tiền" autocomplete="off"><div class="hint">Tự động thêm dấu phân cách hàng nghìn</div>`;
+ });
+ r.fields.forEach(([id])=>document.getElementById(id).addEventListener("input",formatInput));
+ calculate();
+}
+function calcFee(base){
+ const r=rules[document.getElementById("type").value];
+ for(const b of r.brackets){
+  if(base<=b[0]){
+   if(b[1]==="fixed")return [b[2],`Phí cố định ${fmt(b[2])}.`];
+   if(b[1]==="percent")return [Math.round(base*b[2]),`${fmt(base)} × ${b[2]*100}%.`];
+   if(b[1]==="plus")return [Math.round(b[3]+(base-b[2])*b[4]),`${fmt(b[3])} + (${fmt(base)} − ${fmt(b[2])}) × ${b[4]*100}%.`];
+   let raw=b[3]+(base-b[2])*b[4],fee=Math.min(raw,b[5]);
+   return [Math.round(fee),`${fmt(b[3])} + phần vượt ${fmt(b[2])} × ${b[4]*100}%, tối đa ${fmt(b[5])}.`];
+  }
+ }
+ return[0,"Không xác định được bậc phí."];
+}
+function calculate(){
+ const r=rules[document.getElementById("type").value],vals=r.fields.map(x=>num(x[0]));
+ let base=r.mode==="max"?Math.max(...vals):vals.find(v=>v>0)||0;
+ const [fee,formula]=calcFee(base),service=num("service"),other=num("other"),total=fee+service+other;
+ document.getElementById("base").textContent=fmt(base);
+ document.getElementById("fee").textContent=fmt(fee);
+ document.getElementById("serviceOut").textContent=fmt(service);
+ document.getElementById("otherOut").textContent=fmt(other);
+ document.getElementById("total").textContent=fmt(total);
+ document.getElementById("feeWords").textContent=words(fee);
+ document.getElementById("totalWords").textContent=words(total);
+ document.getElementById("detail").textContent=`Loại giao dịch: ${r.name}\nGiá trị tính phí: ${fmt(base)}\n${formula}\nPhí công chứng: ${fmt(fee)}.`;
+ return {base,fee,service,other,total};
+}
+function resetAll(){
+ document.querySelectorAll("input").forEach(e=>e.value="");
+ document.getElementById("service").value="0";document.getElementById("other").value="0";calculate();
+}
+function saveHistory(){
+ const r=rules[document.getElementById("type").value],x=calculate();
+ const h=JSON.parse(localStorage.getItem("cc_history")||"[]");
+ h.unshift({time:new Date().toLocaleString("vi-VN"),type:r.name,...x});
+ localStorage.setItem("cc_history",JSON.stringify(h.slice(0,100)));
+ alert("Đã lưu lịch sử trên điện thoại.");
+ showHistory();
+}
+function showHistory(){
+ const h=JSON.parse(localStorage.getItem("cc_history")||"[]"),box=document.getElementById("history");
+ if(!h.length){box.innerHTML='<div class="small">Chưa có lịch sử.</div>';return}
+ box.innerHTML=h.slice(0,10).map((x,i)=>`<div class="detail" style="margin-top:7px"><b>${x.type}</b><br>${x.time}<br>Giá trị tính phí: ${fmt(x.base)}<br>Phí: ${fmt(x.fee)} · Tổng: ${fmt(x.total)}</div>`).join("");
+}
+document.getElementById("type").addEventListener("change",renderFields);
+document.getElementById("service").addEventListener("input",formatInput);
+document.getElementById("other").addEventListener("input",formatInput);
+renderFields();showHistory();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>
