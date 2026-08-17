@@ -4,8 +4,8 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f7f9",
-  "theme_color": "#0c6b6b",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
   "description": "Công cụ hỗ trợ tính phí công chứng offline.",
   "icons": [
     {

@@ -21,6 +21,27 @@ main{padding:18px 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px
 @media(min-width:761px){body{padding-bottom:25px}.bottom{display:none}}
 @media print{body{background:#fff;padding:0}.no-print,.bottom,.install-banner{display:none!important}header{position:static;background:#fff;color:#000;box-shadow:none;border-bottom:2px solid #222}.grid{display:block}.card{box-shadow:none;margin-bottom:12px}.modal{display:none!important}}
 </style>
+
+<style id="client-record-style">
+.record-panel{margin-top:18px;padding:18px;border-radius:18px;background:#fff;box-shadow:0 6px 24px rgba(15,23,42,.07);border:1px solid #e5e7eb}
+.record-panel h2{margin:0 0 5px;font-size:20px}.record-sub{margin:0 0 14px;color:#64748b;font-size:13px}
+.record-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.record-field label{display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 6px}
+.record-field input,.record-field select{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc;font-size:15px;outline:none}
+.record-field input:focus,.record-field select:focus{border-color:#0f766e;box-shadow:0 0 0 3px rgba(15,118,110,.1)}
+.record-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
+.record-btn{border:0;border-radius:12px;padding:11px 15px;font-weight:700;cursor:pointer}
+.record-btn.primary{background:#0f766e;color:#fff}.record-btn.secondary{background:#e2e8f0;color:#0f172a}.record-btn.danger{background:#fee2e2;color:#991b1b}
+.record-list{margin-top:18px;border-top:1px solid #e5e7eb;padding-top:15px}
+.record-item{padding:13px;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:10px;background:#f8fafc}
+.record-item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.record-name{font-weight:800;color:#0f172a}.record-meta{font-size:12px;color:#64748b;margin-top:4px;line-height:1.5}
+.record-commission{font-weight:800;color:#0f766e;white-space:nowrap}
+.record-mini-actions{display:flex;gap:7px;margin-top:9px}.record-mini-actions button{border:0;border-radius:9px;padding:7px 10px;cursor:pointer;font-size:12px;font-weight:700}
+.record-empty{color:#64748b;font-size:13px;padding:10px 0}
+.record-summary{margin-top:12px;padding:12px;border-radius:12px;background:#ecfdf5;color:#065f46;font-size:13px}
+@media(max-width:600px){.record-grid{grid-template-columns:1fr}.record-panel{padding:15px}.record-item-head{display:block}.record-commission{margin-top:6px}}
+</style>
 </head>
 <body>
 <header><div class="wrap top"><div class="logo"><img src="apple-touch-icon.png" alt=""></div><div><div class="title">TÍNH PHÍ CÔNG CHỨNG</div><div class="sub">Công cụ nghiệp vụ · PWA Offline</div></div><div class="top-actions"><button class="iconbtn" id="installTop" aria-label="Cài đặt">＋</button><button class="iconbtn" id="settingsTop" aria-label="Cài đặt biểu phí">⚙</button></div></div></header>
@@ -67,4 +88,64 @@ function scrollToId(id){$(id).scrollIntoView({behavior:'smooth',block:'start'})}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBanner').style.display='block'});$('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null}else $('iosHelp').style.display='block'};
 async function init(){try{const r=await fetch('config.json',{cache:'no-store'});cfg=await r.json()}catch(e){cfg={maxFee:70000000,brackets:[]}}calc(false)}
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js'));init();
-</script></body></html>
+</script>
+<section class="record-panel" id="clientRecordsPanel">
+  <h2>📒 Sổ ghi chép cá nhân</h2>
+  <p class="record-sub">Lưu thông tin khách hàng và khoản % theo phí công chứng ngay trên thiết bị.</p>
+  <div class="record-grid">
+    <div class="record-field"><label for="recordCustomerName">Tên khách hàng</label><input id="recordCustomerName" type="text" placeholder="Nhập tên khách hàng"></div>
+    <div class="record-field"><label for="recordNotaryNo">Số công chứng</label><input id="recordNotaryNo" type="text" placeholder="Ví dụ: 1234/2026"></div>
+    <div class="record-field"><label for="recordBankOfficer">Cán bộ ngân hàng phụ trách</label><input id="recordBankOfficer" type="text" placeholder="Nhập tên cán bộ"></div>
+    <div class="record-field"><label for="recordPercent">Tỷ lệ % theo phí công chứng</label><select id="recordPercent"><option value="20">20% của phí công chứng</option><option value="30">30% của phí công chứng</option></select></div>
+  </div>
+  <div class="record-actions">
+    <button class="record-btn primary" type="button" id="saveClientRecord">💾 Lưu ghi chép</button>
+    <button class="record-btn secondary" type="button" id="clearClientRecord">↺ Xóa ô nhập</button>
+  </div>
+  <div class="record-summary" id="recordCurrentSummary">Chưa có dữ liệu phí công chứng để tính khoản %.</div>
+  <div class="record-list">
+    <div class="record-item-head"><div><strong>Lịch sử ghi chép</strong><div class="record-meta">Dữ liệu được lưu cục bộ trên thiết bị.</div></div><button class="record-btn danger" type="button" id="clearAllClientRecords">Xóa tất cả</button></div>
+    <div id="clientRecordsList" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<script id="client-record-script">
+(function(){
+  const KEY='tpc_client_records_v1', $=id=>document.getElementById(id);
+  const nameEl=$('recordCustomerName'), noEl=$('recordNotaryNo'), officerEl=$('recordBankOfficer'), percentEl=$('recordPercent');
+  const listEl=$('clientRecordsList'), summaryEl=$('recordCurrentSummary'), saveBtn=$('saveClientRecord');
+  function records(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+  function put(a){localStorage.setItem(KEY,JSON.stringify(a))}
+  function num(v){const s=String(v??'').replace(/[^\d]/g,'');return s?Number(s):NaN}
+  function money(n){return new Intl.NumberFormat('vi-VN').format(Math.round(n))+' đ'}
+  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+  function fee(){
+    const ids=['notaryFee','feeResult','resultFee','phicongchung','phiCongChung','totalFee','fee'];
+    for(const id of ids){const e=$(id);if(e){const n=num(e.textContent||e.value);if(Number.isFinite(n)&&n>0)return n}}
+    const m=[...(document.body.innerText||'').matchAll(/(?:phí công chứng|phí)\D{0,80}([\d.]{3,})\s*(?:đ|₫)?/gi)];
+    for(const x of m){const n=num(x[1]);if(Number.isFinite(n)&&n>0)return n}
+    return null
+  }
+  function render(){
+    const a=records(); if(!a.length){listEl.innerHTML='<div class="record-empty">Chưa có ghi chép nào.</div>';return}
+    listEl.innerHTML=a.map(r=>`<div class="record-item"><div class="record-item-head"><div><div class="record-name">${esc(r.customerName||'(Không có tên)')}</div><div class="record-meta">Số CC: ${esc(r.notaryNo||'—')}<br>Cán bộ NH: ${esc(r.bankOfficer||'—')}<br>Phí công chứng: ${money(r.fee)} · Tỷ lệ: ${r.percent}% · Khoản %: ${money(r.percentAmount)}<br>Lưu lúc: ${esc(r.savedAt)}</div></div><div class="record-commission">${money(r.percentAmount)}</div></div><div class="record-mini-actions"><button type="button" data-edit="${r.id}">✏️ Sửa</button><button type="button" data-delete="${r.id}">🗑️ Xóa</button></div></div>`).join('')
+  }
+  function summary(){const f=fee();if(!f){summaryEl.textContent='Chưa có dữ liệu phí công chứng để tính khoản %. Hãy tính phí ở phần trên trước.';return}const p=Number(percentEl.value);summaryEl.innerHTML=`Phí công chứng hiện tại: <strong>${money(f)}</strong> → ${p}% = <strong>${money(f*p/100)}</strong>`}
+  $('saveClientRecord').addEventListener('click',()=>{
+    const customerName=nameEl.value.trim();if(!customerName){alert('Vui lòng nhập tên khách hàng.');nameEl.focus();return}
+    const f=fee();if(!f){alert('Chưa lấy được phí công chứng. Hãy tính phí ở phần trên trước khi lưu.');return}
+    const p=Number(percentEl.value), a=records(), id=saveBtn.dataset.editId||(Date.now()+'-'+Math.random().toString(16).slice(2));
+    const item={id,customerName,notaryNo:noEl.value.trim(),bankOfficer:officerEl.value.trim(),percent:p,fee:f,percentAmount:f*p/100,savedAt:new Date().toLocaleString('vi-VN')};
+    const i=a.findIndex(x=>x.id===id); if(i>=0)a[i]=item;else a.unshift(item);put(a);delete saveBtn.dataset.editId;saveBtn.textContent='💾 Lưu ghi chép';render();summary();alert('Đã lưu ghi chép.')
+  });
+  $('clearClientRecord').addEventListener('click',()=>{nameEl.value='';noEl.value='';officerEl.value='';percentEl.value='20';delete saveBtn.dataset.editId;saveBtn.textContent='💾 Lưu ghi chép';summary()});
+  $('clearAllClientRecords').addEventListener('click',()=>{if(records().length&&confirm('Xóa toàn bộ ghi chép trên thiết bị?')){localStorage.removeItem(KEY);render()}});
+  listEl.addEventListener('click',e=>{
+    const ed=e.target.closest('[data-edit]'), del=e.target.closest('[data-delete]'), a=records();
+    if(ed){const r=a.find(x=>x.id===ed.dataset.edit);if(!r)return;nameEl.value=r.customerName||'';noEl.value=r.notaryNo||'';officerEl.value=r.bankOfficer||'';percentEl.value=String(r.percent||20);saveBtn.dataset.editId=r.id;saveBtn.textContent='💾 Cập nhật ghi chép';scrollTo({top:$('clientRecordsPanel').offsetTop-20,behavior:'smooth'});summary()}
+    if(del&&confirm('Xóa ghi chép này?')){put(a.filter(x=>x.id!==del.dataset.delete));render()}
+  });
+  percentEl.addEventListener('change',summary);document.addEventListener('click',()=>setTimeout(summary,50));render();summary()
+})();
+</script>
+</body></html>
