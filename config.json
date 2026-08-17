@@ -1,0 +1,64 @@
+{
+  "currency": "VNĐ",
+  "maxFee": 70000000,
+  "brackets": [
+    {
+      "max": 50000000,
+      "type": "fixed",
+      "value": 50000,
+      "label": "Dưới 50 triệu đồng"
+    },
+    {
+      "max": 100000000,
+      "type": "fixed",
+      "value": 100000,
+      "label": "Từ 50 triệu đến 100 triệu đồng"
+    },
+    {
+      "max": 1000000000,
+      "type": "percent",
+      "rate": 0.001,
+      "label": "Trên 100 triệu đến 01 tỷ đồng"
+    },
+    {
+      "max": 3000000000,
+      "type": "base_plus",
+      "base": 1000000,
+      "rate": 0.0006,
+      "threshold": 1000000000,
+      "label": "Từ trên 01 tỷ đến 03 tỷ đồng"
+    },
+    {
+      "max": 5000000000,
+      "type": "base_plus",
+      "base": 2200000,
+      "rate": 0.0005,
+      "threshold": 3000000000,
+      "label": "Từ trên 03 tỷ đến 05 tỷ đồng"
+    },
+    {
+      "max": 10000000000,
+      "type": "base_plus",
+      "base": 3200000,
+      "rate": 0.0004,
+      "threshold": 5000000000,
+      "label": "Từ trên 05 tỷ đến 10 tỷ đồng"
+    },
+    {
+      "max": 100000000000,
+      "type": "base_plus",
+      "base": 5200000,
+      "rate": 0.0003,
+      "threshold": 10000000000,
+      "label": "Từ trên 10 tỷ đến 100 tỷ đồng"
+    },
+    {
+      "max": null,
+      "type": "base_plus",
+      "base": 32200000,
+      "rate": 0.0002,
+      "threshold": 100000000000,
+      "label": "Trên 100 tỷ đồng"
+    }
+  ]
+}

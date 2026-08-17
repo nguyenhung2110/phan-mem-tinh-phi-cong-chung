@@ -1,232 +1,70 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f766e">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Tính phí công chứng">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c6b6b"><meta name="description" content="Tính phí công chứng offline">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Tính phí công chứng">
 <title>Tính phí công chứng</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f3f5f7;font-family:Arial,sans-serif;color:#17202a}
-.app{max-width:720px;margin:auto;padding:14px 12px 30px}
-header{background:#0f766e;color:#fff;border-radius:16px;padding:18px 16px;margin-bottom:12px}
-h1{font-size:21px;margin:0 0 5px}header p{margin:0;font-size:13px;opacity:.9}
-.card{background:#fff;border-radius:15px;padding:16px;margin:10px 0;box-shadow:0 2px 10px #0000000b}
-label{display:block;font-weight:700;font-size:14px;margin:10px 0 6px}
-select,input{width:100%;padding:13px 12px;border:1px solid #ccd3d8;border-radius:10px;font-size:17px;background:#fff}
-input{text-align:right}
-.hint{font-size:12px;color:#6b7280;margin-top:4px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-button{border:0;border-radius:10px;padding:13px 14px;font-weight:700;font-size:15px;cursor:pointer}
-.primary{background:#0f766e;color:#fff}.secondary{background:#e7efef;color:#115e59}.danger{background:#fee2e2;color:#991b1b}
-.results .row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #edf0f2;padding:10px 0}
-.results .row:last-child{border-bottom:0}.value{text-align:right;font-weight:700}
-.total{font-size:22px;color:#0f766e}.words{font-weight:600;line-height:1.45;margin-top:6px}
-.detail{background:#f8fafc;border-radius:10px;padding:11px;font-size:13px;line-height:1.55;white-space:pre-line}
-.small{font-size:12px;color:#6b7280}
-@media(max-width:480px){.grid{grid-template-columns:1fr}.app{padding:10px 9px 24px}}
+:root{--navy:#0c374f;--teal:#0c6b6b;--teal2:#168b88;--bg:#f4f7f9;--card:#fff;--line:#dbe5e8;--muted:#66757d;--ink:#17313b;--soft:#e8f5f3;--shadow:0 10px 28px rgba(12,55,79,.08)}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:82px}
+header{background:linear-gradient(135deg,var(--navy),var(--teal));color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 18px;position:sticky;top:0;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.wrap{max-width:980px;margin:auto}.top{display:flex;align-items:center;gap:13px}.logo{width:48px;height:48px;border-radius:14px;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.12)}.logo img{width:44px;height:44px}.title{font-size:18px;font-weight:800;letter-spacing:.2px}.sub{font-size:12px;opacity:.82;margin-top:3px}.top-actions{margin-left:auto;display:flex;gap:8px}.iconbtn{width:40px;height:40px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);color:#fff;border-radius:12px;font-size:18px}
+main{padding:18px 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}.section-title{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;margin-bottom:16px}.badge{width:28px;height:28px;border-radius:9px;background:var(--soft);color:var(--teal);display:grid;place-items:center;font-size:13px}
+.field{margin-bottom:14px}label{font-size:12px;font-weight:800;color:#53656d;display:block;margin-bottom:7px;text-transform:uppercase;letter-spacing:.35px}input,select{width:100%;height:48px;padding:0 13px;border:1px solid #cfdcdf;border-radius:12px;background:#fff;color:var(--ink);font-size:16px;outline:none}input:focus,select:focus{border-color:var(--teal2);box-shadow:0 0 0 4px rgba(22,139,136,.12)}.money{text-align:right;font-variant-numeric:tabular-nums;font-weight:650}.words{font-size:12px;color:var(--muted);margin-top:6px;min-height:17px;line-height:1.35}.hint{font-size:11px;color:#839198;margin-top:5px;line-height:1.4}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}.btn{height:46px;border:0;border-radius:12px;font-weight:800;font-size:14px}.primary{background:var(--teal);color:#fff}.secondary{background:#edf2f4;color:var(--navy)}.outline{background:#fff;color:var(--teal);border:1px solid #b9d9d7}.result{background:linear-gradient(180deg,#f5fbfa,#fff)}.result-grid{display:grid;gap:0}.row{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #e5edef;font-size:13px}.row strong{font-weight:800;text-align:right}.total{margin:12px -2px 0;padding:15px;border:0;border-radius:14px;background:var(--navy);color:#fff;align-items:end}.total .amount{font-size:24px}.moneywords{margin-top:14px;padding:12px;border-radius:12px;background:#eef8f6;border:1px solid #d2eae6;font-size:13px;line-height:1.45}.moneywords b{color:var(--teal)}.explain{line-height:1.6;font-size:13px;background:#f7fafb;border-left:4px solid var(--teal2);padding:12px;border-radius:8px}.legal{font-size:11px;color:var(--muted);line-height:1.6}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.smallbtn{padding:9px 11px;border-radius:10px;border:1px solid #d3e0e3;background:#fff;color:var(--navy);font-weight:700;font-size:12px}
+.bottom{position:fixed;bottom:0;left:0;right:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid #dfe7e9;padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.bottom button{border:0;background:none;color:#718087;font-size:10px;font-weight:700;padding:5px 2px}.bottom span{display:block;font-size:18px;margin-bottom:2px}.bottom .active{color:var(--teal)}
+.modal{position:fixed;inset:0;background:rgba(9,31,42,.48);z-index:40;display:none;align-items:flex-end}.modal.open{display:flex}.sheet{background:#fff;width:100%;max-height:88vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.2)}.sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.close{border:0;background:#edf2f4;border-radius:10px;width:36px;height:36px}.setting-row{padding:12px 0;border-bottom:1px solid #e7edef}.setting-row label{text-transform:none;letter-spacing:0;font-size:13px}.history-item{padding:12px;border:1px solid #e0e8ea;border-radius:12px;margin-bottom:8px}.history-item b{display:block}.empty{color:var(--muted);font-size:13px;text-align:center;padding:25px}
+.install-banner{display:none;margin:0 0 16px;background:var(--navy);color:#fff;border-radius:16px;padding:13px 14px}.install-banner button{margin-top:8px;background:#fff;color:var(--navy);border:0;border-radius:10px;padding:8px 11px;font-weight:800}.ios-help{font-size:12px;line-height:1.5;background:#f1f7f7;padding:10px;border-radius:10px;margin-top:10px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.card{padding:16px}.top-actions{gap:5px}.title{font-size:16px}.logo{width:44px;height:44px}.actions{grid-template-columns:1fr 1fr}.actions .primary{grid-column:1/-1}.bottom{display:grid}}
+@media(min-width:761px){body{padding-bottom:25px}.bottom{display:none}}
+@media print{body{background:#fff;padding:0}.no-print,.bottom,.install-banner{display:none!important}header{position:static;background:#fff;color:#000;box-shadow:none;border-bottom:2px solid #222}.grid{display:block}.card{box-shadow:none;margin-bottom:12px}.modal{display:none!important}}
 </style>
 </head>
 <body>
-<div class="app">
-<header>
-<h1>PHẦN MỀM TÍNH PHÍ CÔNG CHỨNG</h1>
-<p>Bản điện thoại · Không cần Internet · Một file HTML</p>
-</header>
-
-<div class="card">
-<label>Loại giao dịch</label>
-<select id="type">
-<option value="mortgage">Hợp đồng thế chấp</option>
-<option value="sale">Hợp đồng chuyển nhượng</option>
-<option value="gift">Hợp đồng tặng cho</option>
-<option value="loan">Hợp đồng vay tài sản</option>
-<option value="inheritance">Khai nhận / phân chia di sản</option>
-</select>
-<div id="fields"></div>
-</div>
-
-<div class="card">
-<label>Thù lao công chứng (VNĐ)</label>
-<input id="service" inputmode="numeric" value="0">
-<label>Chi phí khác (VNĐ)</label>
-<input id="other" inputmode="numeric" value="0">
-<div class="grid" style="margin-top:12px">
-<button class="primary" onclick="calculate()">TÍNH PHÍ</button>
-<button class="secondary" onclick="resetAll()">NHẬP LẠI</button>
-</div>
-</div>
-
-<div class="card results">
-<div class="row"><span>Giá trị tính phí</span><span class="value" id="base">0 đồng</span></div>
-<div class="row"><span>Phí công chứng</span><span class="value" id="fee">0 đồng</span></div>
-<div class="row"><span>Thù lao</span><span class="value" id="serviceOut">0 đồng</span></div>
-<div class="row"><span>Chi phí khác</span><span class="value" id="otherOut">0 đồng</span></div>
-<div class="row"><span class="total">TỔNG CỘNG</span><span class="value total" id="total">0 đồng</span></div>
-<label>Phí công chứng bằng chữ</label><div class="words" id="feeWords">Không đồng</div>
-<label>Tổng cộng bằng chữ</label><div class="words" id="totalWords">Không đồng</div>
-</div>
-
-<div class="card">
-<label>Cách tính</label>
-<div class="detail" id="detail">Chưa có kết quả.</div>
-</div>
-
-<div class="card">
+<header><div class="wrap top"><div class="logo"><img src="apple-touch-icon.png" alt=""></div><div><div class="title">TÍNH PHÍ CÔNG CHỨNG</div><div class="sub">Công cụ nghiệp vụ · PWA Offline</div></div><div class="top-actions"><button class="iconbtn" id="installTop" aria-label="Cài đặt">＋</button><button class="iconbtn" id="settingsTop" aria-label="Cài đặt biểu phí">⚙</button></div></div></header>
+<main class="wrap">
+<div id="installBanner" class="install-banner"><b>📱 Cài ứng dụng</b><div>Thêm Tính phí công chứng vào màn hình chính để dùng như một app.</div><button id="installBtn">Cài đặt ứng dụng</button><div id="iosHelp" class="ios-help" style="display:none">Trên iPhone: bấm <b>Chia sẻ</b> → <b>Thêm vào Màn hình chính</b>.</div></div>
 <div class="grid">
-<button class="secondary" onclick="saveHistory()">LƯU LỊCH SỬ</button>
-<button class="secondary" onclick="showHistory()">XEM LỊCH SỬ</button>
-</div>
-<div id="history" style="margin-top:10px"></div>
-<p class="small">Dữ liệu lịch sử được lưu trong bộ nhớ của trình duyệt trên thiết bị này.</p>
-</div>
-</div>
-
+<section class="card" id="calculator">
+<div class="section-title"><span class="badge">01</span> Thông tin giao dịch</div>
+<div class="field"><label>Loại giao dịch</label><select id="type"><option>Hợp đồng thế chấp</option><option disabled>— Các loại khác sẽ bổ sung —</option></select></div>
+<div class="field"><label>Giá trị tài sản (VNĐ)</label><input id="asset" class="money" inputmode="numeric" autocomplete="off" placeholder="5.000.000.000"><div id="assetWords" class="words"></div></div>
+<div class="field"><label>Giá trị khoản vay (VNĐ)</label><input id="loan" class="money" inputmode="numeric" autocomplete="off" placeholder="3.000.000.000"><div id="loanWords" class="words"></div><div class="hint">Đối với giao dịch dùng giá trị khoản vay làm căn cứ tính phí, nhập số tiền tại đây.</div></div>
+<div class="field"><label>Thù lao công chứng (VNĐ)</label><input id="service" class="money" value="0" inputmode="numeric"></div>
+<div class="field"><label>Chi phí khác (VNĐ)</label><input id="other" class="money" value="0" inputmode="numeric"></div>
+<div class="actions no-print"><button class="btn primary" id="calc">TÍNH PHÍ</button><button class="btn secondary" id="reset">NHẬP LẠI</button><button class="btn outline" id="copy">SAO CHÉP KẾT QUẢ</button><button class="btn secondary" id="print">IN / LƯU PDF</button></div>
+</section>
+<section class="card result" id="result">
+<div class="section-title"><span class="badge">02</span> Kết quả</div>
+<div class="result-grid">
+<div class="row"><span>Giá trị tài sản</span><strong id="oAsset">0 đồng</strong></div><div class="row"><span>Giá trị khoản vay</span><strong id="oLoan">0 đồng</strong></div><div class="row"><span>Giá trị tính phí</span><strong id="oBase">0 đồng</strong></div><div class="row"><span>Phí công chứng</span><strong id="oFee">0 đồng</strong></div><div class="row"><span>Thù lao</span><strong id="oService">0 đồng</strong></div><div class="row"><span>Chi phí khác</span><strong id="oOther">0 đồng</strong></div>
+<div class="row total"><span><b>TỔNG CỘNG</b></span><strong class="amount" id="oTotal">0 đồng</strong></div></div>
+<div class="moneywords"><b>Phí công chứng bằng chữ</b><br><span id="feeWords">Không đồng</span></div><div class="moneywords"><b>Tổng cộng bằng chữ</b><br><span id="totalWords">Không đồng</span></div>
+</section></div>
+<section class="card" style="margin-top:16px"><div class="section-title"><span class="badge">03</span> Cách tính</div><div id="explain" class="explain">Nhập giá trị giao dịch để xem chi tiết.</div></section>
+<section class="card" style="margin-top:16px"><div class="section-title"><span class="badge">04</span> Căn cứ & ghi chú</div><div class="legal">Bộ công thức và biểu phí trong bản này được cấu hình để thử nghiệm. Trước khi sử dụng nghiệp vụ chính thức, cần rà soát Thông tư 257/2016/TT-BTC, các văn bản sửa đổi/thay thế và mức thù lao, chi phí áp dụng tại tổ chức hành nghề công chứng. Không xem kết quả của ứng dụng là ý kiến pháp lý.</div></section>
+</main>
+<nav class="bottom no-print"><button class="active" onclick="scrollToId('calculator')"><span>⌨</span>Tính phí</button><button onclick="openHistory()"><span>▣</span>Lịch sử</button><button onclick="openSettings()"><span>⚙</span>Biểu phí</button><button onclick="showAbout()"><span>ⓘ</span>Thông tin</button></nav>
+<div class="modal" id="modal"><div class="sheet"><div class="sheet-head"><h3 id="sheetTitle" style="margin:0">Biểu phí</h3><button class="close" onclick="closeModal()">✕</button></div><div id="sheetBody"></div></div></div>
 <script>
-const rules={
-mortgage:{
- name:"Hợp đồng thế chấp",
- fields:[["asset","Giá trị tài sản"],["loan","Giá trị khoản vay"]],
- base:["loan","asset"], mode:"max",
- brackets:[
-  [50000000,"fixed",50000],
-  [100000000,"fixed",100000],
-  [1000000000,"percent",0.001],
-  [3000000000,"plus",1000000000,1000000,0.0006],
-  [5000000000,"plus",3000000000,2200000,0.0005],
-  [10000000000,"plus",5000000000,3200000,0.0004],
-  [100000000000,"plus",10000000000,5200000,0.0003],
-  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
- ]},
-sale:{
- name:"Hợp đồng chuyển nhượng",
- fields:[["contract","Giá trị hợp đồng"],["asset","Giá trị tài sản theo quy định"]],
- base:["contract","asset"],mode:"max", brackets:[
-  [50000000,"fixed",50000],[100000000,"fixed",100000],[1000000000,"percent",0.001],
-  [3000000000,"plus",1000000000,1000000,0.0006],[5000000000,"plus",3000000000,2200000,0.0005],
-  [10000000000,"plus",5000000000,3200000,0.0004],[100000000000,"plus",10000000000,5200000,0.0003],
-  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
- ]},
-gift:{
- name:"Hợp đồng tặng cho",
- fields:[["contract","Giá trị hợp đồng"],["asset","Giá trị tài sản theo quy định"]],
- base:["contract","asset"],mode:"max",
- brackets:[
-  [50000000,"fixed",50000],[100000000,"fixed",100000],[1000000000,"percent",0.001],
-  [3000000000,"plus",1000000000,1000000,0.0006],[5000000000,"plus",3000000000,2200000,0.0005],
-  [10000000000,"plus",5000000000,3200000,0.0004],[100000000000,"plus",10000000000,5200000,0.0003],
-  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
- ]},
-loan:{
- name:"Hợp đồng vay tài sản",fields:[["loan","Giá trị khoản vay"]],
- base:["loan"],mode:"first",brackets:[
-  [50000000,"fixed",50000],[100000000,"fixed",100000],[1000000000,"percent",0.001],
-  [3000000000,"plus",1000000000,1000000,0.0006],[5000000000,"plus",3000000000,2200000,0.0005],
-  [10000000000,"plus",5000000000,3200000,0.0004],[100000000000,"plus",10000000000,5200000,0.0003],
-  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
- ]},
-inheritance:{
- name:"Khai nhận / phân chia di sản",fields:[["estate","Giá trị di sản"]],
- base:["estate"],mode:"first",brackets:[
-  [50000000,"fixed",50000],[100000000,"fixed",100000],[1000000000,"percent",0.001],
-  [3000000000,"plus",1000000000,1000000,0.0006],[5000000000,"plus",3000000000,2200000,0.0005],
-  [10000000000,"plus",5000000000,3200000,0.0004],[100000000000,"plus",10000000000,5200000,0.0003],
-  [Infinity,"cap",100000000000,32200000,0.0002,70000000]
- ]}
-};
-
-const digits=["không","một","hai","ba","bốn","năm","sáu","bảy","tám","chín"];
-function read3(n,full=false){
- n=Number(n);let h=Math.floor(n/100),r=n%100,t=Math.floor(r/10),u=r%10,s="";
- if(h)s+=digits[h]+" trăm"; else if(full)s="không trăm";
- if(!r)return s;
- if(s)s+=" ";
- if(t===0)s+=(full?"lẻ ":"")+digits[u];
- else if(t===1)s+="mười"+(u?" "+(u===5?"lăm":digits[u]):"");
- else s+=digits[t]+" mươi"+(u?" "+(u===1?"mốt":u===5?"lăm":u===4?"tư":digits[u]):"");
- return s;
-}
-function words(n){
- n=Math.round(n);if(!n)return"Không đồng";
- const units=["","nghìn","triệu","tỷ","nghìn tỷ","triệu tỷ","tỷ tỷ"],g=[];
- while(n){g.push(n%1000);n=Math.floor(n/1000)}
- let p=[];
- for(let i=g.length-1;i>=0;i--)if(g[i])p.push(read3(g[i],p.length>0)+(units[i]?" "+units[i]:""));
- let s=p.join(" ");return s[0].toUpperCase()+s.slice(1)+" đồng";
-}
-function num(id){return Number((document.getElementById(id)?.value||"").replace(/[^\d]/g,""))||0}
-function fmt(n){return Math.round(n).toLocaleString("vi-VN")+" đồng"}
-function formatInput(e){
- const s=e.target.value.replace(/[^\d]/g,"");
- e.target.value=s?Number(s).toLocaleString("vi-VN"):"";
- calculate();
-}
-function renderFields(){
- const r=rules[document.getElementById("type").value],box=document.getElementById("fields");
- box.innerHTML="";
- r.fields.forEach(([id,label])=>{
-  box.innerHTML+=`<label>${label}</label><input id="${id}" inputmode="numeric" placeholder="Nhập số tiền" autocomplete="off"><div class="hint">Tự động thêm dấu phân cách hàng nghìn</div>`;
- });
- r.fields.forEach(([id])=>document.getElementById(id).addEventListener("input",formatInput));
- calculate();
-}
-function calcFee(base){
- const r=rules[document.getElementById("type").value];
- for(const b of r.brackets){
-  if(base<=b[0]){
-   if(b[1]==="fixed")return [b[2],`Phí cố định ${fmt(b[2])}.`];
-   if(b[1]==="percent")return [Math.round(base*b[2]),`${fmt(base)} × ${b[2]*100}%.`];
-   if(b[1]==="plus")return [Math.round(b[3]+(base-b[2])*b[4]),`${fmt(b[3])} + (${fmt(base)} − ${fmt(b[2])}) × ${b[4]*100}%.`];
-   let raw=b[3]+(base-b[2])*b[4],fee=Math.min(raw,b[5]);
-   return [Math.round(fee),`${fmt(b[3])} + phần vượt ${fmt(b[2])} × ${b[4]*100}%, tối đa ${fmt(b[5])}.`];
-  }
- }
- return[0,"Không xác định được bậc phí."];
-}
-function calculate(){
- const r=rules[document.getElementById("type").value],vals=r.fields.map(x=>num(x[0]));
- let base=r.mode==="max"?Math.max(...vals):vals.find(v=>v>0)||0;
- const [fee,formula]=calcFee(base),service=num("service"),other=num("other"),total=fee+service+other;
- document.getElementById("base").textContent=fmt(base);
- document.getElementById("fee").textContent=fmt(fee);
- document.getElementById("serviceOut").textContent=fmt(service);
- document.getElementById("otherOut").textContent=fmt(other);
- document.getElementById("total").textContent=fmt(total);
- document.getElementById("feeWords").textContent=words(fee);
- document.getElementById("totalWords").textContent=words(total);
- document.getElementById("detail").textContent=`Loại giao dịch: ${r.name}\nGiá trị tính phí: ${fmt(base)}\n${formula}\nPhí công chứng: ${fmt(fee)}.`;
- return {base,fee,service,other,total};
-}
-function resetAll(){
- document.querySelectorAll("input").forEach(e=>e.value="");
- document.getElementById("service").value="0";document.getElementById("other").value="0";calculate();
-}
-function saveHistory(){
- const r=rules[document.getElementById("type").value],x=calculate();
- const h=JSON.parse(localStorage.getItem("cc_history")||"[]");
- h.unshift({time:new Date().toLocaleString("vi-VN"),type:r.name,...x});
- localStorage.setItem("cc_history",JSON.stringify(h.slice(0,100)));
- alert("Đã lưu lịch sử trên điện thoại.");
- showHistory();
-}
-function showHistory(){
- const h=JSON.parse(localStorage.getItem("cc_history")||"[]"),box=document.getElementById("history");
- if(!h.length){box.innerHTML='<div class="small">Chưa có lịch sử.</div>';return}
- box.innerHTML=h.slice(0,10).map((x,i)=>`<div class="detail" style="margin-top:7px"><b>${x.type}</b><br>${x.time}<br>Giá trị tính phí: ${fmt(x.base)}<br>Phí: ${fmt(x.fee)} · Tổng: ${fmt(x.total)}</div>`).join("");
-}
-document.getElementById("type").addEventListener("change",renderFields);
-document.getElementById("service").addEventListener("input",formatInput);
-document.getElementById("other").addEventListener("input",formatInput);
-renderFields();showHistory();
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
-}
-</script>
-</body>
-</html>
+const nf=new Intl.NumberFormat('vi-VN'); const digits=['không','một','hai','ba','bốn','năm','sáu','bảy','tám','chín']; const $=id=>document.getElementById(id); let cfg=null; let deferredPrompt=null;
+function num(v){let s=String(v??'').replace(/\D/g,''); return s?Number(s):0} function money(n){return nf.format(Math.round(n||0))+' đồng'} function fmt(el){let n=num(el.value);el.value=n?nf.format(n):''}
+function three(n,full=false){n=Math.floor(n);if(!n)return full?'không trăm':'';let h=Math.floor(n/100),r=n%100,t=Math.floor(r/10),u=r%10,s='';if(h)s+=digits[h]+' trăm';else if(full)s+='không trăm';if(!r)return s;if(s)s+=' ';if(!t)s+=(full?'lẻ ':'')+digits[u];else if(t===1)s+='mười'+(u?(' '+(u===5?'lăm':digits[u])):'');else s+=digits[t]+' mươi'+(u?(' '+(u===1?'mốt':u===5?'lăm':u===4?'tư':digits[u])):'');return s}
+function words(n){n=Math.floor(n||0);if(!n)return'Không đồng';const units=['','nghìn','triệu','tỷ','nghìn tỷ','triệu tỷ','tỷ tỷ'];let g=[];while(n){g.push(n%1000);n=Math.floor(n/1000)}let p=[];for(let i=g.length-1;i>=0;i--)if(g[i])p.push(three(g[i],p.length>0)+(units[i]?' '+units[i]:''));let s=p.join(' ').replace(/\s+/g,' ').trim();return s[0].toUpperCase()+s.slice(1)+' đồng'}
+function calcFee(base){for(const b of cfg.brackets){if(b.max===null||base<=b.max){let fee=0,ex='';if(b.type==='fixed'){fee=b.value;ex=b.label+': '+money(fee)+' / trường hợp.'}else if(b.type==='percent'){fee=base*b.rate;ex=money(base)+' × '+(b.rate*100).toLocaleString('vi-VN')+'%.'}else{fee=b.base+(base-b.threshold)*b.rate;ex=money(b.base)+' + ('+money(base)+' − '+money(b.threshold)+') × '+(b.rate*100).toLocaleString('vi-VN')+'%.'}fee=Math.min(fee,cfg.maxFee);if(fee>=cfg.maxFee)ex+=' Mức thu bị giới hạn tối đa '+money(cfg.maxFee)+' / trường hợp.';return[fee,ex,b.label]}}return[0,'','']}
+function calc(save=true){let a=num($('asset').value),l=num($('loan').value),s=num($('service').value),o=num($('other').value),base=l>0?l:a;let [f,ex,band]=calcFee(base),total=f+s+o;$('assetWords').textContent=a?words(a):'';$('loanWords').textContent=l?words(l):'';$('oAsset').textContent=money(a);$('oLoan').textContent=money(l);$('oBase').textContent=money(base);$('oFee').textContent=money(f);$('oService').textContent=money(s);$('oOther').textContent=money(o);$('oTotal').textContent=money(total);$('feeWords').textContent=words(f);$('totalWords').textContent=words(total);$('explain').innerHTML=base?'<b>Bậc áp dụng:</b> '+band+'<br><b>Căn cứ tính phí:</b> '+money(base)+'<br><b>Công thức:</b> '+ex+'<br><b>Phí công chứng:</b> '+money(f):'Nhập giá trị giao dịch để xem chi tiết.';if(save&&base){saveHistory({date:new Date().toISOString(),type:$('type').value,asset:a,loan:l,fee:f,service:s,other:o,total})}}
+['asset','loan','service','other'].forEach(id=>$(id).addEventListener('input',()=>{fmt($(id));calc(false)})); $('calc').onclick=()=>calc(true); $('reset').onclick=()=>{['asset','loan'].forEach(id=>$(id).value='');$('service').value='0';$('other').value='0';calc(false)};
+$('print').onclick=()=>{calc(false);window.print()}; $('copy').onclick=async()=>{calc(false);let t=`TÍNH PHÍ CÔNG CHỨNG\nGiá trị tính phí: ${$('oBase').textContent}\nPhí công chứng: ${$('oFee').textContent}\nThù lao: ${$('oService').textContent}\nChi phí khác: ${$('oOther').textContent}\nTỔNG CỘNG: ${$('oTotal').textContent}\nBằng chữ: ${$('totalWords').textContent}`;try{await navigator.clipboard.writeText(t);alert('Đã sao chép kết quả.')}catch(e){alert(t)}};
+function saveHistory(x){let h=JSON.parse(localStorage.getItem('tpc_history')||'[]');h.unshift(x);localStorage.setItem('tpc_history',JSON.stringify(h.slice(0,30)))} function openModal(title,body){$('sheetTitle').textContent=title;$('sheetBody').innerHTML=body;$('modal').classList.add('open')} function closeModal(){$('modal').classList.remove('open')}
+function openHistory(){let h=JSON.parse(localStorage.getItem('tpc_history')||'[]');let body=h.length?h.map((x,i)=>`<div class="history-item"><b>${new Date(x.date).toLocaleString('vi-VN')} · ${x.type}</b><span>Giá trị tính phí: ${money(x.loan||x.asset)} · Phí: ${money(x.fee)} · Tổng: ${money(x.total)}</span><div class="toolbar"><button class="smallbtn" onclick="loadHistory(${i})">Dùng lại</button><button class="smallbtn" onclick="deleteHistory(${i})">Xóa</button></div></div>`).join(''):`<div class="empty">Chưa có giao dịch nào được lưu trên thiết bị.</div>`;openModal('Lịch sử tính phí',body)}
+function loadHistory(i){let h=JSON.parse(localStorage.getItem('tpc_history')||'[]'),x=h[i];if(!x)return;$('asset').value=x.asset?nf.format(x.asset):'';$('loan').value=x.loan?nf.format(x.loan):'';$('service').value=nf.format(x.service||0);$('other').value=nf.format(x.other||0);closeModal();calc(false);scrollToId('calculator')}
+function deleteHistory(i){let h=JSON.parse(localStorage.getItem('tpc_history')||'[]');h.splice(i,1);localStorage.setItem('tpc_history',JSON.stringify(h));openHistory()}
+function openSettings(){let rows=cfg.brackets.map((b,i)=>`<div class="setting-row"><b>${i+1}. ${b.label}</b><div style="font-size:12px;color:#68777d;margin-top:4px">${b.type==='fixed'?money(b.value):b.type==='percent'?((b.rate*100).toLocaleString('vi-VN')+'%'):money(b.base)+' + '+((b.rate*100).toLocaleString('vi-VN'))+'% phần vượt '+money(b.threshold)}</div></div>`).join('');openModal('Biểu phí đang cấu hình',`<div class="legal" style="margin-bottom:12px">Các mức dưới đây là cấu hình của bản thử nghiệm. Khi pháp luật thay đổi, có thể thay file <b>config.json</b> hoặc xây màn hình chỉnh sửa biểu phí ở phiên bản tiếp theo.</div>${rows}<div class="toolbar"><button class="smallbtn" onclick="resetConfig()">Khôi phục biểu phí mặc định</button></div>`)}
+function resetConfig(){localStorage.removeItem('tpc_config');location.reload()} function showAbout(){openModal('Thông tin ứng dụng',`<p><b>Tính Phí Công Chứng · v2.0</b></p><p>Thiết kế tối ưu cho iPhone/Android, hỗ trợ định dạng tiền, số tiền bằng chữ, lịch sử, sao chép và in/lưu PDF.</p><p class="legal">Ứng dụng chạy phía trình duyệt và có thể hoạt động offline sau khi đã tải tài nguyên. Biểu phí cần được rà soát trước khi dùng nghiệp vụ.</p>`)}
+function scrollToId(id){$(id).scrollIntoView({behavior:'smooth',block:'start'})} $('settingsTop').onclick=openSettings; $('installTop').onclick=()=>{$('installBanner').style.display='block';$('installBanner').scrollIntoView({behavior:'smooth'})};
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBanner').style.display='block'});$('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null}else $('iosHelp').style.display='block'};
+async function init(){try{const r=await fetch('config.json',{cache:'no-store'});cfg=await r.json()}catch(e){cfg={maxFee:70000000,brackets:[]}}calc(false)}
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js'));init();
+</script></body></html>
